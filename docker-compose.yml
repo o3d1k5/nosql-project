@@ -1,0 +1,55 @@
+services:
+
+  web:
+    build: .
+    container_name: siakad-web
+
+    ports:
+      - "8080:80"
+
+    volumes:
+      - ./:/var/www/html
+
+    environment:
+      MONGO_URI: mongodb://admin:admin123@mongodb:27017/?authSource=admin
+      MONGO_DB: akademik
+      API_KEY: praktikum-api-2026-ganti
+
+    depends_on:
+      - mongodb
+    
+    
+
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:7
+    container_name: siakad-mongodb
+
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+
+    volumes:
+      - mongodb_data:/data/db
+
+    restart: unless-stopped
+
+  mongo-express:
+    image: mongo-express:1
+    container_name: siakad-mongo-express
+
+    ports:
+      - "8081:8081"
+
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://admin:admin123@mongodb:27017/
+      ME_CONFIG_BASICAUTH_ENABLED: "true"
+      ME_CONFIG_BASICAUTH_USERNAME: viewer
+      ME_CONFIG_BASICAUTH_PASSWORD: viewer123
+
+    depends_on:
+      - mongodb
+
+volumes:
+  mongodb_data:
